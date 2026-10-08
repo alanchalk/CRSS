@@ -1,11 +1,12 @@
 Package: crssoccupant
-Title: CRSS 2024 Motor Vehicle Occupant Injury Data
+Title: CRSS 2024 Injury Case-Study Data
 Version: 0.0.0.9000
 Authors@R: person("CAS", "Research", role = c("aut", "cre"),
     email = "research@example.com")
-Description: Reproducible preparation of a person-level motor vehicle occupant
-    injury dataset from the United States Crash Report Sampling System for
-    decision-tree and related case studies.
+Description: Reproducible preparation of person- and crash-level injury
+    datasets from the United States Crash Report Sampling System for
+    decision-tree and related case studies, including a serious-injury dataset
+    restricted to information available before collision.
 License: CC0
 Encoding: UTF-8
 Depends:

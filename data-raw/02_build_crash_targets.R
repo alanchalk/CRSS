@@ -447,6 +447,145 @@ schema[, model_role := fcase(
 )]
 fwrite(schema, file.path(metadata_dir, "crss_crash_targets_schema.csv"))
 
+# A separate table enforces the information boundary for Option 3.  It is
+# intentionally impossible to select collision mechanics or injury summaries
+# from this object by accident. Retrospective descriptions of pre-impact
+# conditions are retained but labelled separately in the schema.
+journey_start_base <- c(
+  "region", "urbanicity", "crash_month", "day_of_week", "crash_hour",
+  "crash_minute", "within_interchange_area", "junction_location",
+  "intersection_type", "relation_to_road", "work_zone", "light_condition",
+  "primary_weather", "interstate_highway",
+  occupant_count_columns, occupant_flag_columns,
+  "youngest_occupant_age", "oldest_occupant_age", "mean_occupant_age",
+  "commercial_vehicle_involved", "hazardous_material_involved",
+  "oldest_vehicle_model_year", "newest_vehicle_model_year",
+  "mean_vehicle_model_year", "maximum_speed_limit",
+  "maximum_reported_travel_speed", "crash_alcohol_involvement"
+)
+
+# These crash-factor levels describe pre-existing road/location conditions.
+# Other crashrf levels describe the collision or transient precipitating events
+# and are deliberately not admitted.
+journey_start_crash_context <- c(
+  "crash_factor__obstructed_crosswalks",
+  "crash_factor__other_maintenance_or_construction_created_condition",
+  "crash_factor__regular_congestion",
+  "crash_factor__related_to_a_bus_stop",
+  "crash_factor__surface_under_water",
+  "crash_factor__surface_washed_out_caved_in_road_slippage",
+  "crash_factor__toll_booth_plaza_related",
+  "crash_factor__within_designated_school_zone"
+)
+
+journey_start_prefixes <- c(
+  "weather__", "vehicle_contributing_factor__", "vision_obstruction__",
+  "driver_violation__", "vehicle_special_factor__",
+  "driver_factor__", "driver_distraction__", "driver_impairment__",
+  "avoidance_manoeuvre__", "any_vehicle_speed_relation__",
+  "any_driver_alcohol__",
+  "vehicle_body_type__", "vehicle_configuration__",
+  "any_vehicle_trafficway__", "any_vehicle_road_alignment__",
+  "any_vehicle_road_grade__", "any_vehicle_surface_condition__"
+)
+journey_start_prefixed <- names(crss_crash_targets)[vapply(
+  names(crss_crash_targets),
+  function(x) any(startsWith(x, journey_start_prefixes)),
+  logical(1L)
+)]
+journey_start_predictors <- unique(c(
+  journey_start_base, journey_start_crash_context, journey_start_prefixed
+))
+missing_journey_start <- setdiff(journey_start_predictors,
+                                 names(crss_crash_targets))
+if (length(missing_journey_start)) {
+  stop("Missing journey-start fields: ",
+       paste(missing_journey_start, collapse = ", "))
+}
+
+journey_start_admin <- c(
+  "case_number", "fold", "serious_or_fatal_injury",
+  "weight", "psu", "psu_var", "psu_stratum"
+)
+crss_journey_start_severity <- crss_crash_targets[, c(
+  journey_start_admin, journey_start_predictors
+), with = FALSE]
+setkey(crss_journey_start_severity, case_number)
+assert_unique_key(crss_journey_start_severity, "case_number",
+                  "journey-start severity dataset")
+
+post_crash_exact <- c(
+  "first_harmful_event", "manner_of_collision", "school_bus_related",
+  "vehicle_count"
+)
+post_crash_prefixes <- c(
+  "vehicle_event__"
+)
+forbidden_journey_start <- c(
+  intersect(names(crss_journey_start_severity), post_crash_exact),
+  names(crss_journey_start_severity)[vapply(
+    names(crss_journey_start_severity),
+    function(x) any(startsWith(x, post_crash_prefixes)),
+    logical(1L)
+  )],
+  intersect(names(crss_journey_start_severity),
+            setdiff(target_columns, "serious_or_fatal_injury"))
+)
+if (length(forbidden_journey_start)) {
+  stop("Post-crash or alternative-outcome fields entered journey-start data: ",
+       paste(forbidden_journey_start, collapse = ", "))
+}
+
+journey_schema <- schema[match(names(crss_journey_start_severity), variable)]
+journey_schema[, model_role := fcase(
+  variable == "case_number", "identifier",
+  variable == "fold", "partition",
+  variable == "serious_or_fatal_injury", "target",
+  variable %chin% c("weight", "psu", "psu_var", "psu_stratum"),
+  "survey_design",
+  default = "predictor"
+)]
+journey_schema[, information_timing := fcase(
+  model_role != "predictor", "not_a_predictor",
+  startsWith(variable, "vehicle_contributing_factor__") |
+    startsWith(variable, "vision_obstruction__") |
+    startsWith(variable, "driver_violation__") |
+    startsWith(variable, "vehicle_special_factor__") |
+    startsWith(variable, "driver_factor__") |
+    startsWith(variable, "driver_distraction__") |
+    startsWith(variable, "driver_impairment__") |
+    startsWith(variable, "avoidance_manoeuvre__") |
+    startsWith(variable, "any_vehicle_speed_relation__") |
+    startsWith(variable, "any_driver_alcohol__") |
+    variable %chin% c("maximum_reported_travel_speed",
+                      "crash_alcohol_involvement"),
+  "existed_before_collision_but_police_reported",
+  default = "available_before_collision"
+)]
+fwrite(journey_schema,
+       file.path(metadata_dir, "crss_journey_start_severity_schema.csv"))
+
+journey_report <- list(
+  source_year = 2024L,
+  built_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  rows = nrow(crss_journey_start_severity),
+  columns = ncol(crss_journey_start_severity),
+  predictors = length(journey_start_predictors),
+  target = "serious_or_fatal_injury",
+  target_count = sum(crss_journey_start_severity$serious_or_fatal_injury == 1L),
+  collision_consequence_features = 0L,
+  retrospective_preimpact_predictors = sum(
+    journey_schema$information_timing ==
+      "existed_before_collision_but_police_reported"
+  ),
+  duplicate_crash_keys = crss_journey_start_severity[, anyDuplicated(case_number)]
+)
+jsonlite::write_json(
+  journey_report,
+  file.path(metadata_dir, "crss_journey_start_severity_build.json"),
+  pretty = TRUE, auto_unbox = TRUE
+)
+
 build_report <- list(
   source_year = 2024L,
   built_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
@@ -468,9 +607,17 @@ jsonlite::write_json(
 
 save(crss_crash_targets,
      file = file.path(data_dir, "crss_crash_targets.rda"), compress = "xz")
+save(crss_journey_start_severity,
+     file = file.path(data_dir, "crss_journey_start_severity.rda"),
+     compress = "xz")
 
 message(
   "Built crss_crash_targets: ",
   format(nrow(crss_crash_targets), big.mark = ","), " rows x ",
   format(ncol(crss_crash_targets), big.mark = ","), " columns"
+)
+message(
+  "Built crss_journey_start_severity: ",
+  format(nrow(crss_journey_start_severity), big.mark = ","), " rows x ",
+  format(ncol(crss_journey_start_severity), big.mark = ","), " columns"
 )

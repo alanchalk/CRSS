@@ -71,6 +71,11 @@ person keys. It creates:
   modelling roles;
 - `inst/extdata/crss_crash_target_exclusions.csv`: target-specific leakage
   exclusions.
+- `data/crss_journey_start_severity.rda`: the physically restricted Option 3
+  dataset, excluding collision consequences while retaining clearly labelled
+  retrospective descriptions of pre-impact conditions and conduct;
+- `inst/extdata/crss_journey_start_severity_schema.csv`: provenance, modelling
+  role, and information timing for every Option 3 column.
 
 The 2024 build contains **120,475 occupants, 90,456 vehicles, 51,627 crashes,
 and 485 columns**. It includes 90,440 drivers and 30,035 passengers. The binary
