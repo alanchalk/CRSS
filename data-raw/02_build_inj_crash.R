@@ -128,7 +128,7 @@ dt_crss_crash_working[, serious_or_fatal_injury := as.integer(
 person <- fread(
   file.path(raw_dir, "person.csv"),
   select = c(
-    "CASENUM", "PER_TYPNAME", "AGE_IM", "SEX_IMNAME",
+    "CASENUM", "PER_TYPNAME", "INJSEV_IMNAME", "AGE_IM", "SEX_IMNAME",
     "SEAT_IMNAME", "REST_USENAME"
   ),
   na.strings = c("", "NA")
@@ -136,6 +136,21 @@ person <- fread(
 person[, occupant := PER_TYPNAME %chin% person_types_in_scope]
 person[, passenger :=
          PER_TYPNAME == "Passenger of a Motor Vehicle In-Transport"]
+person[, pedestrian := PER_TYPNAME == "Pedestrian"]
+person[, injured_person :=
+         INJSEV_IMNAME != "No Apparent Injury (O)" &
+         INJSEV_IMNAME != "Died Prior to Crash*"]
+pedestrian_target <- person[, .(
+  injured_pedestrian = as.integer(any(pedestrian & injured_person))
+), by = CASENUM]
+setnames(pedestrian_target, "CASENUM", "case_number")
+dt_crss_crash_working <- left_join_checked(
+  dt_crss_crash_working, pedestrian_target, "case_number",
+  "pedestrian target join"
+)
+set(dt_crss_crash_working,
+    which(is.na(dt_crss_crash_working$injured_pedestrian)),
+    "injured_pedestrian", 0L)
 
 # Driver/passenger characteristics existed before impact and support the
 # journey-start severity case study. Non-motorists are deliberately excluded
@@ -298,7 +313,7 @@ dt_crss_crash_working <- left_join_checked(
   dt_crss_crash_working, fold_map, "case_number", "fold join"
 )
 
-target_columns <- "serious_or_fatal_injury"
+target_columns <- c("serious_or_fatal_injury", "injured_pedestrian")
 
 setcolorder(dt_crss_crash_working, c(
   "case_number", "fold", target_columns,
@@ -328,6 +343,7 @@ schema[, source := fcase(
     "youngest_occupant_age", "oldest_occupant_age", "mean_occupant_age"
   ), "person.csv",
   variable == "serious_or_fatal_injury", "accident.csv",
+  variable == "injured_pedestrian", "person.csv",
   variable %chin% c("commercial_vehicle_involved",
                     "hazardous_material_involved",
                     "oldest_vehicle_model_year", "newest_vehicle_model_year",
@@ -414,14 +430,14 @@ if (length(missing_journey_start)) {
 }
 
 journey_start_admin <- c(
-  "case_number", "fold", "serious_or_fatal_injury",
+  "case_number", "fold", target_columns,
   "weight", "psu", "psu_var", "psu_stratum"
 )
-dt_crss_sev_crash <- dt_crss_crash_working[, c(
+dt_crss_inj_crash <- dt_crss_crash_working[, c(
   journey_start_admin, journey_start_predictors
 ), with = FALSE]
-setkey(dt_crss_sev_crash, case_number)
-assert_unique_key(dt_crss_sev_crash, "case_number",
+setkey(dt_crss_inj_crash, case_number)
+assert_unique_key(dt_crss_inj_crash, "case_number",
                   "journey-start severity dataset")
 
 post_crash_exact <- c(
@@ -432,25 +448,23 @@ post_crash_prefixes <- c(
   "vehicle_event__"
 )
 forbidden_journey_start <- c(
-  intersect(names(dt_crss_sev_crash), post_crash_exact),
-  names(dt_crss_sev_crash)[vapply(
-    names(dt_crss_sev_crash),
+  intersect(names(dt_crss_inj_crash), post_crash_exact),
+  names(dt_crss_inj_crash)[vapply(
+    names(dt_crss_inj_crash),
     function(x) any(startsWith(x, post_crash_prefixes)),
     logical(1L)
-  )],
-  intersect(names(dt_crss_sev_crash),
-            setdiff(target_columns, "serious_or_fatal_injury"))
+  )]
 )
 if (length(forbidden_journey_start)) {
   stop("Post-crash or alternative-outcome fields entered journey-start data: ",
        paste(forbidden_journey_start, collapse = ", "))
 }
 
-journey_schema <- schema[match(names(dt_crss_sev_crash), variable)]
+journey_schema <- schema[match(names(dt_crss_inj_crash), variable)]
 journey_schema[, model_role := fcase(
   variable == "case_number", "identifier",
   variable == "fold", "partition",
-  variable == "serious_or_fatal_injury", "target",
+  variable %chin% target_columns, "target",
   variable %chin% c("weight", "psu", "psu_var", "psu_stratum"),
   "survey_design",
   default = "predictor"
@@ -473,35 +487,40 @@ journey_schema[, information_timing := fcase(
   default = "available_before_collision"
 )]
 fwrite(journey_schema,
-       file.path(metadata_dir, "dt_crss_sev_crash_schema.csv"))
+       file.path(metadata_dir, "dt_crss_inj_crash_schema.csv"))
 
 journey_report <- list(
   source_year = 2024L,
   built_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
-  rows = nrow(dt_crss_sev_crash),
-  columns = ncol(dt_crss_sev_crash),
+  rows = nrow(dt_crss_inj_crash),
+  columns = ncol(dt_crss_inj_crash),
   predictors = length(journey_start_predictors),
-  target = "serious_or_fatal_injury",
-  target_count = sum(dt_crss_sev_crash$serious_or_fatal_injury == 1L),
+  targets = target_columns,
+  target_counts = list(
+    serious_or_fatal_injury = sum(
+      dt_crss_inj_crash$serious_or_fatal_injury == 1L
+    ),
+    injured_pedestrian = sum(dt_crss_inj_crash$injured_pedestrian == 1L)
+  ),
   collision_consequence_features = 0L,
   retrospective_preimpact_predictors = sum(
     journey_schema$information_timing ==
       "existed_before_collision_but_police_reported"
   ),
-  duplicate_crash_keys = dt_crss_sev_crash[, anyDuplicated(case_number)]
+  duplicate_crash_keys = dt_crss_inj_crash[, anyDuplicated(case_number)]
 )
 jsonlite::write_json(
   journey_report,
-  file.path(metadata_dir, "dt_crss_sev_crash_build.json"),
+  file.path(metadata_dir, "dt_crss_inj_crash_build.json"),
   pretty = TRUE, auto_unbox = TRUE
 )
 
-save(dt_crss_sev_crash,
-     file = file.path(data_dir, "dt_crss_sev_crash.rda"),
+save(dt_crss_inj_crash,
+     file = file.path(data_dir, "dt_crss_inj_crash.rda"),
      compress = "xz")
 
 message(
-  "Built dt_crss_sev_crash: ",
-  format(nrow(dt_crss_sev_crash), big.mark = ","), " rows x ",
-  format(ncol(dt_crss_sev_crash), big.mark = ","), " columns"
+  "Built dt_crss_inj_crash: ",
+  format(nrow(dt_crss_inj_crash), big.mark = ","), " rows x ",
+  format(ncol(dt_crss_inj_crash), big.mark = ","), " columns"
 )

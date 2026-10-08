@@ -54,7 +54,7 @@ The original English injury-severity categories remain in
 ```bash
 Rscript data-raw/00_download_crss_2024.R
 Rscript data-raw/01_build_inj_occupant.R
-Rscript data-raw/02_build_sev_crash.R
+Rscript data-raw/02_build_inj_crash.R
 ```
 
 The build uses `data.table`, validates source schemas and keys, aggregates
@@ -69,10 +69,11 @@ in [`NAMING.md`](NAMING.md).
   modelling role;
 - `inst/extdata/dt_crss_inj_occupant_build.json`: row/column counts and build
   checks;
-- `data/dt_crss_sev_crash.rda`: the physically restricted Option 3
-  dataset, excluding collision consequences while retaining clearly labelled
-  retrospective descriptions of pre-impact conditions and conduct;
-- `inst/extdata/dt_crss_sev_crash_schema.csv`: provenance, modelling
+- `data/dt_crss_inj_crash.rda`: the crash-level injury dataset supporting the
+  pedestrian and serious/fatal targets, excluding collision consequences while
+  retaining clearly labelled retrospective descriptions of pre-impact
+  conditions and conduct;
+- `inst/extdata/dt_crss_inj_crash_schema.csv`: provenance, modelling
   role, and information timing for every Option 3 column.
 
 The 2024 build contains **120,475 occupants, 90,456 vehicles, 51,627 crashes,
@@ -80,10 +81,11 @@ and 485 columns**. It includes 90,440 drivers and 30,035 passengers. The binary
 target has 87,065 no-apparent-injury records, 33,407 injured records, and three
 records with no crash-caused outcome because the person died before the crash.
 
-The journey-start build contains all **51,658 sampled crashes** and the single
-serious/fatal-injury target. The repository does not publish a general crash
-table containing alternative outcomes and mixed-timing fields. Its design is
-documented in [`CASE_STUDY_OPTIONS.md`](CASE_STUDY_OPTIONS.md).
+The crash-level build contains all **51,658 sampled crashes** and two explicit
+targets: injured-pedestrian involvement and serious/fatal injury. The
+repository does not publish a general crash table containing mixed-timing
+fields. Its design is documented in
+[`CASE_STUDY_OPTIONS.md`](CASE_STUDY_OPTIONS.md).
 
 ## Source-file decisions
 

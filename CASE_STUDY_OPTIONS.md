@@ -67,9 +67,10 @@ grouped validation by crash prevents direct train/test leakage.
 
 ### Dataset and observation
 
-This option would require a dedicated table with one row per crash and
-`injured_pedestrian` as the binary target. The repository deliberately does not
-publish a general-purpose crash table containing mixed-timing fields.
+This option uses `dt_crss_inj_crash`, with one row per crash and
+`injured_pedestrian` as the binary target. The same table supports the
+serious/fatal case study because both questions use the same crash grain and
+the same carefully timed predictor set.
 
 Of 51,658 crashes, 2,663 involved at least one injured pedestrian (**5.15%** of
 the CRSS sample).
@@ -114,7 +115,7 @@ than distinguishing injury from non-injury among pedestrians.
 
 ### Dataset and observation
 
-This option uses the dedicated `dt_crss_sev_crash` table, with one
+This option uses the dedicated `dt_crss_inj_crash` table, with one
 row per crash and `serious_or_fatal_injury` as the binary target. The table is
 physically restricted to eligible fields rather than requiring readers to
 remove post-crash columns during modelling.
@@ -161,7 +162,7 @@ pre-impact conduct:
 - speeding;
 - avoidance behaviour.
 
-These fields are present in `dt_crss_sev_crash` and explicitly marked
+These fields are present in `dt_crss_inj_crash` and explicitly marked
 as retrospective. A principal model can omit them using the schema, while an
 expanded model can include them to show the value gained from information that
 was unavailable at journey start.
