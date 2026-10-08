@@ -433,11 +433,11 @@ journey_start_admin <- c(
   "case_number", "fold", target_columns,
   "weight", "psu", "psu_var", "psu_stratum"
 )
-dt_crss_inj_crash <- dt_crss_crash_working[, c(
+dt_crss_accident <- dt_crss_crash_working[, c(
   journey_start_admin, journey_start_predictors
 ), with = FALSE]
-setkey(dt_crss_inj_crash, case_number)
-assert_unique_key(dt_crss_inj_crash, "case_number",
+setkey(dt_crss_accident, case_number)
+assert_unique_key(dt_crss_accident, "case_number",
                   "journey-start severity dataset")
 
 post_crash_exact <- c(
@@ -448,9 +448,9 @@ post_crash_prefixes <- c(
   "vehicle_event__"
 )
 forbidden_journey_start <- c(
-  intersect(names(dt_crss_inj_crash), post_crash_exact),
-  names(dt_crss_inj_crash)[vapply(
-    names(dt_crss_inj_crash),
+  intersect(names(dt_crss_accident), post_crash_exact),
+  names(dt_crss_accident)[vapply(
+    names(dt_crss_accident),
     function(x) any(startsWith(x, post_crash_prefixes)),
     logical(1L)
   )]
@@ -460,7 +460,7 @@ if (length(forbidden_journey_start)) {
        paste(forbidden_journey_start, collapse = ", "))
 }
 
-journey_schema <- schema[match(names(dt_crss_inj_crash), variable)]
+journey_schema <- schema[match(names(dt_crss_accident), variable)]
 journey_schema[, model_role := fcase(
   variable == "case_number", "identifier",
   variable == "fold", "partition",
@@ -487,40 +487,40 @@ journey_schema[, information_timing := fcase(
   default = "available_before_collision"
 )]
 fwrite(journey_schema,
-       file.path(metadata_dir, "dt_crss_inj_crash_schema.csv"))
+       file.path(metadata_dir, "dt_crss_accident_schema.csv"))
 
 journey_report <- list(
   source_year = 2024L,
   built_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
-  rows = nrow(dt_crss_inj_crash),
-  columns = ncol(dt_crss_inj_crash),
+  rows = nrow(dt_crss_accident),
+  columns = ncol(dt_crss_accident),
   predictors = length(journey_start_predictors),
   targets = target_columns,
   target_counts = list(
     serious_or_fatal_injury = sum(
-      dt_crss_inj_crash$serious_or_fatal_injury == 1L
+      dt_crss_accident$serious_or_fatal_injury == 1L
     ),
-    injured_pedestrian = sum(dt_crss_inj_crash$injured_pedestrian == 1L)
+    injured_pedestrian = sum(dt_crss_accident$injured_pedestrian == 1L)
   ),
   collision_consequence_features = 0L,
   retrospective_preimpact_predictors = sum(
     journey_schema$information_timing ==
       "existed_before_collision_but_police_reported"
   ),
-  duplicate_crash_keys = dt_crss_inj_crash[, anyDuplicated(case_number)]
+  duplicate_crash_keys = dt_crss_accident[, anyDuplicated(case_number)]
 )
 jsonlite::write_json(
   journey_report,
-  file.path(metadata_dir, "dt_crss_inj_crash_build.json"),
+  file.path(metadata_dir, "dt_crss_accident_build.json"),
   pretty = TRUE, auto_unbox = TRUE
 )
 
-save(dt_crss_inj_crash,
-     file = file.path(data_dir, "dt_crss_inj_crash.rda"),
+save(dt_crss_accident,
+     file = file.path(data_dir, "dt_crss_accident.rda"),
      compress = "xz")
 
 message(
-  "Built dt_crss_inj_crash: ",
-  format(nrow(dt_crss_inj_crash), big.mark = ","), " rows x ",
-  format(ncol(dt_crss_inj_crash), big.mark = ","), " columns"
+  "Built dt_crss_accident: ",
+  format(nrow(dt_crss_accident), big.mark = ","), " rows x ",
+  format(ncol(dt_crss_accident), big.mark = ","), " columns"
 )

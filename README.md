@@ -1,4 +1,4 @@
-# CRSS 2024 occupant injury case-study data
+# CRSS 2024 person- and accident-level injury data
 
 This repository builds a person-level dataset from the US National Highway
 Traffic Safety Administration's 2024 Crash Report Sampling System (CRSS).
@@ -53,27 +53,27 @@ The original English injury-severity categories remain in
 
 ```bash
 Rscript data-raw/00_download_crss_2024.R
-Rscript data-raw/01_build_inj_occupant.R
-Rscript data-raw/02_build_inj_crash.R
+Rscript data-raw/01_build_person.R
+Rscript data-raw/02_build_accident.R
 ```
 
 The build uses `data.table`, validates source schemas and keys, aggregates
 multi-response files before joining, and refuses to save a result with duplicate
 person keys. It creates:
 
-Exported analytical tables follow the target-before-grain convention documented
-in [`NAMING.md`](NAMING.md).
+Exported analytical tables use source-and-grain names documented in
+[`NAMING.md`](NAMING.md); target definitions remain in their schemas.
 
-- `data/dt_crss_inj_occupant.rda`: the package dataset;
-- `inst/extdata/dt_crss_inj_occupant_schema.csv`: variable source, timing, and
+- `data/dt_crss_person.rda`: one row per in-scope person;
+- `inst/extdata/dt_crss_person_schema.csv`: variable source, timing, and
   modelling role;
-- `inst/extdata/dt_crss_inj_occupant_build.json`: row/column counts and build
+- `inst/extdata/dt_crss_person_build.json`: row/column counts and build
   checks;
-- `data/dt_crss_inj_crash.rda`: the crash-level injury dataset supporting the
+- `data/dt_crss_accident.rda`: one row per accident, supporting the
   pedestrian and serious/fatal targets, excluding collision consequences while
   retaining clearly labelled retrospective descriptions of pre-impact
   conditions and conduct;
-- `inst/extdata/dt_crss_inj_crash_schema.csv`: provenance, modelling
+- `inst/extdata/dt_crss_accident_schema.csv`: provenance, modelling
   role, and information timing for every Option 3 column.
 
 The 2024 build contains **120,475 occupants, 90,456 vehicles, 51,627 crashes,

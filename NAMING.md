@@ -5,34 +5,35 @@ This repository follows the conventions used by the other packages in the
 
 ## R package data objects
 
-Use lower-case snake case with the components:
+For reusable source tables, use lower-case snake case with the components:
 
 ```text
-dt_<source>_<target-type>_<grain-or-qualifier>
+dt_<source>_<observation-grain>
 ```
 
-The target type precedes the observation grain. The CRSS objects are therefore:
+The CRSS objects are therefore:
 
-- `dt_crss_inj_occupant`: binary occupant-injury target, one row per occupant;
-- `dt_crss_inj_crash`: pedestrian-injury and serious/fatal-injury targets, one
-  row per crash.
+- `dt_crss_person`: one row per in-scope person;
+- `dt_crss_accident`: one row per sampled accident.
 
-This matches names such as `dt_stats19_freq_lsoa`, where `freq` is the target
-type and `lsoa` is the grain. `dt_` identifies an R `data.table`; `crss`
-identifies the source.
+`dt_` identifies an R `data.table`, `crss` identifies the source, and the final
+token states the row grain. The names deliberately do not encode a target:
+both tables can support several supervised targets or unsupervised analysis.
+For a genuinely target-specific derivative, the collection's longer pattern
+remains `dt_<source>_<target-type>_<grain-or-qualifier>`.
 
 ## GLMStudio catalogue IDs
 
 Use lower-case snake case with the components:
 
 ```text
-<country>_<line>_<source>_<target-type>_<optional-qualifier>_<version>
+<country>_<line>_<source>_<optional-target-or-qualifier>_<version>
 ```
 
 The corresponding CRSS catalogue IDs are:
 
-- `us_auto_crss_inj_occupant_v1`;
-- `us_auto_crss_inj_crash_v1`.
+- `us_auto_crss_person_v1`;
+- `us_auto_crss_accident_v1`.
 
 Some manifests use a `ds_` prefix for the complete dataset identifier.
 
@@ -40,6 +41,6 @@ Country codes include `us` for the United States, `en` for England, and `zz`
 for synthetic datasets. The line code is `auto` for motor insurance and `acft`
 for aircraft.
 
-The shared `inj` token is deliberate: both CRSS objects support injury
-classification. Their principal distinction is observation grain—`occupant`
-versus `crash`—rather than when the information became available.
+The principal distinction between the CRSS IDs is observation grain—`person`
+versus `accident`. Target definitions belong in catalogue metadata rather than
+in the IDs of these reusable tables.

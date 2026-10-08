@@ -26,6 +26,6 @@
 #'
 #' @format A `data.table` with one row per crash. Exact column provenance,
 #'   modelling role, and information timing are recorded in
-#'   `inst/extdata/dt_crss_inj_crash_schema.csv`.
+#'   `inst/extdata/dt_crss_accident_schema.csv`.
 #' @source \url{https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/CRSS/2024/}
-"dt_crss_inj_crash"
+"dt_crss_accident"
