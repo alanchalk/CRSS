@@ -5,8 +5,8 @@
 #' binary target, `serious_or_fatal_injury`, records whether at least one person
 #' sustained a suspected serious or fatal injury.
 #'
-#' Unlike `crss_crash_targets`, this table has an enforced boundary excluding
-#' collision consequences and outcome information.
+#' The table has an enforced boundary excluding collision consequences and
+#' outcome information.
 #' Its predictors describe people and vehicles present, the route and road,
 #' time, lighting, weather, vehicle construction and equipment, pre-existing
 #' vehicle defects, vision obstructions, charged violations, vehicle special
@@ -24,6 +24,6 @@
 #'
 #' @format A `data.table` with one row per crash. Exact column provenance,
 #'   modelling role, and information timing are recorded in
-#'   `inst/extdata/crss_journey_start_severity_schema.csv`.
+#'   `inst/extdata/dt_crss_journey_start_severity_schema.csv`.
 #' @source \url{https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/CRSS/2024/}
-"crss_journey_start_severity"
+"dt_crss_journey_start_severity"

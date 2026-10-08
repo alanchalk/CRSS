@@ -54,27 +54,24 @@ The original English injury-severity categories remain in
 ```bash
 Rscript data-raw/00_download_crss_2024.R
 Rscript data-raw/01_build_occupant_injury.R
-Rscript data-raw/02_build_crash_targets.R
+Rscript data-raw/02_build_journey_start_severity.R
 ```
 
 The build uses `data.table`, validates source schemas and keys, aggregates
 multi-response files before joining, and refuses to save a result with duplicate
 person keys. It creates:
 
-- `data/crss_occupant_injury.rda`: the package dataset;
-- `inst/extdata/crss_occupant_injury_schema.csv`: variable source, timing, and
+Exported analytical tables follow the repository convention `dt_<source>_<purpose>`.
+
+- `data/dt_crss_occupant_injury.rda`: the package dataset;
+- `inst/extdata/dt_crss_occupant_injury_schema.csv`: variable source, timing, and
   modelling role;
-- `inst/extdata/crss_occupant_injury_build.json`: row/column counts and build
-  checks.
-- `data/crss_crash_targets.rda`: one row per sampled crash;
-- `inst/extdata/crss_crash_targets_schema.csv`: crash-level provenance and
-  modelling roles;
-- `inst/extdata/crss_crash_target_exclusions.csv`: target-specific leakage
-  exclusions.
-- `data/crss_journey_start_severity.rda`: the physically restricted Option 3
+- `inst/extdata/dt_crss_occupant_injury_build.json`: row/column counts and build
+  checks;
+- `data/dt_crss_journey_start_severity.rda`: the physically restricted Option 3
   dataset, excluding collision consequences while retaining clearly labelled
   retrospective descriptions of pre-impact conditions and conduct;
-- `inst/extdata/crss_journey_start_severity_schema.csv`: provenance, modelling
+- `inst/extdata/dt_crss_journey_start_severity_schema.csv`: provenance, modelling
   role, and information timing for every Option 3 column.
 
 The 2024 build contains **120,475 occupants, 90,456 vehicles, 51,627 crashes,
@@ -82,14 +79,10 @@ and 485 columns**. It includes 90,440 drivers and 30,035 passengers. The binary
 target has 87,065 no-apparent-injury records, 33,407 injured records, and three
 records with no crash-caused outcome because the person died before the crash.
 
-The crash-level build contains all **51,658 sampled crashes and 412 columns**,
-with alternative targets for injury, serious/fatal injury, pedestrian and cyclist injury,
-multiple injured people, passenger or occupant injury, and multi-vehicle
-crashes. Rollover, fire, hit-and-run, commercial-vehicle involvement, and
-hazardous materials are not targets. Commercial-vehicle and hazardous-material
-status remain pre-crash predictors; rollover, fire, and hit-and-run are omitted.
-Towing and maximum vehicle-damage targets are also deliberately not included. Its design is documented in
-[`data-raw/CRASH_CASE_STUDY_DESIGN.md`](data-raw/CRASH_CASE_STUDY_DESIGN.md).
+The journey-start build contains all **51,658 sampled crashes** and the single
+serious/fatal-injury target. The repository does not publish a general crash
+table containing alternative outcomes and mixed-timing fields. Its design is
+documented in [`CASE_STUDY_OPTIONS.md`](CASE_STUDY_OPTIONS.md).
 
 ## Source-file decisions
 

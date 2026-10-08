@@ -1,7 +1,7 @@
 variable,source,model_role,information_timing
 case_number,accident.csv,identifier,not_a_predictor
 fold,derived,partition,not_a_predictor
-serious_or_fatal_injury,person.csv/accident.csv,target,not_a_predictor
+serious_or_fatal_injury,accident.csv,target,not_a_predictor
 weight,accident.csv,survey_design,not_a_predictor
 psu,accident.csv,survey_design,not_a_predictor
 psu_var,accident.csv,survey_design,not_a_predictor

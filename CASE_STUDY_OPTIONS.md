@@ -14,7 +14,7 @@ the probability that a journey results in a crash.
 
 ### Dataset and observation
 
-This option uses `crss_occupant_injury`, with one row per driver or passenger.
+This option uses `dt_crss_occupant_injury`, with one row per driver or passenger.
 People are nested within vehicles, and vehicles are nested within crashes. The
 unique key is `case_number + vehicle_number + person_number`.
 
@@ -67,8 +67,9 @@ grouped validation by crash prevents direct train/test leakage.
 
 ### Dataset and observation
 
-This option uses `crss_crash_targets`, with one row per crash and
-`injured_pedestrian` as the binary target.
+This option would require a dedicated table with one row per crash and
+`injured_pedestrian` as the binary target. The repository deliberately does not
+publish a general-purpose crash table containing mixed-timing fields.
 
 Of 51,658 crashes, 2,663 involved at least one injured pedestrian (**5.15%** of
 the CRSS sample).
@@ -113,10 +114,10 @@ than distinguishing injury from non-injury among pedestrians.
 
 ### Dataset and observation
 
-This option uses the dedicated `crss_journey_start_severity` table, with one
+This option uses the dedicated `dt_crss_journey_start_severity` table, with one
 row per crash and `serious_or_fatal_injury` as the binary target. The table is
-physically restricted to eligible fields; it is not merely a recommendation to
-remove post-crash columns from `crss_crash_targets` during modelling.
+physically restricted to eligible fields rather than requiring readers to
+remove post-crash columns during modelling.
 
 Of 51,658 crashes, 6,662 resulted in at least one serious or fatal injury
 (**12.90%** of the CRSS sample).
@@ -150,9 +151,9 @@ describe conduct or status that existed before impact, but were recorded or
 determined after the crash. Their timing is labelled in the accompanying schema
 so an analysis can include or omit them.
 
-### Separate retrospective extension
+### Optional retrospective extension
 
-A separate, explicitly labelled retrospective dataset may add police-reconstructed
+An explicitly labelled retrospective model may add police-reconstructed
 pre-impact conduct:
 
 - distraction and mobile-phone use;
@@ -160,7 +161,7 @@ pre-impact conduct:
 - speeding;
 - avoidance behaviour.
 
-These fields are present in `crss_journey_start_severity` and explicitly marked
+These fields are present in `dt_crss_journey_start_severity` and explicitly marked
 as retrospective. A principal model can omit them using the schema, while an
 expanded model can include them to show the value gained from information that
 was unavailable at journey start.
