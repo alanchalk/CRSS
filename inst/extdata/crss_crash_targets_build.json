@@ -1,0 +1,26 @@
+{
+  "source_year": 2024,
+  "built_at_utc": "2026-10-08 08:34:15 UTC",
+  "rows": 51658,
+  "columns": 415,
+  "duplicate_crash_keys": 0,
+  "targets": ["any_injury", "serious_or_fatal_injury", "fatal_crash", "number_injured", "multiple_people_injured", "maximum_injury_severity", "injured_pedestrian", "injured_cyclist", "serious_vulnerable_road_user_injury", "occupant_injury", "passenger_injury", "rollover_crash", "vehicle_fire", "hit_and_run", "multi_vehicle_crash", "commercial_vehicle_involved", "hazardous_material_involved"],
+  "target_counts": {
+    "any_injury": 26519,
+    "serious_or_fatal_injury": 6662,
+    "fatal_crash": 1101,
+    "multiple_people_injured": 7787,
+    "injured_pedestrian": 2663,
+    "injured_cyclist": 1905,
+    "serious_vulnerable_road_user_injury": 1089,
+    "occupant_injury": 21721,
+    "passenger_injury": 6018,
+    "rollover_crash": 2290,
+    "vehicle_fire": 244,
+    "hit_and_run": 6486,
+    "multi_vehicle_crash": 34769,
+    "commercial_vehicle_involved": 4190,
+    "hazardous_material_involved": 41
+  },
+  "towing_and_damage_targets_included": false
+}
