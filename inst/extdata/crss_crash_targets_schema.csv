@@ -12,12 +12,7 @@ injured_cyclist,person.csv/accident.csv,alternative_target
 serious_vulnerable_road_user_injury,person.csv/accident.csv,alternative_target
 occupant_injury,person.csv/accident.csv,alternative_target
 passenger_injury,person.csv/accident.csv,alternative_target
-rollover_crash,vehicle.csv,alternative_target
-vehicle_fire,vehicle.csv,alternative_target
-hit_and_run,vehicle.csv,alternative_target
 multi_vehicle_crash,accident.csv,alternative_target
-commercial_vehicle_involved,vehicle.csv,alternative_target
-hazardous_material_involved,vehicle.csv,alternative_target
 weight,accident.csv,survey_design
 psu,accident.csv,survey_design
 psu_var,accident.csv,survey_design

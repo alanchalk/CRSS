@@ -246,16 +246,7 @@ vehicle[, valid_speed_limit := fifelse(VSPD_LIM >= 0L & VSPD_LIM <= 85L,
                                        VSPD_LIM, NA_integer_)]
 vehicle[, valid_travel_speed := fifelse(TRAV_SP >= 0L & TRAV_SP <= 200L,
                                         TRAV_SP, NA_integer_)]
-vehicle[, commercial_configuration := !V_CONFIGNAME %chin% c(
-  "Not Applicable", "Unknown", "Qualifying Vehicle, Unknown Configuration"
-)]
-
 vehicle_summary <- vehicle[, .(
-  rollover_crash = as.integer(any(ROLLOVERNAME == "Rollover")),
-  vehicle_fire = as.integer(any(FIRE_EXPNAME == "Yes")),
-  hit_and_run = as.integer(any(HIT_RUNNAME == "Yes")),
-  commercial_vehicle_involved = as.integer(any(commercial_configuration)),
-  hazardous_material_involved = as.integer(any(HAZ_INVNAME == "Yes")),
   oldest_vehicle_model_year = suppressWarnings(min(as.numeric(valid_model_year),
                                                     na.rm = TRUE)),
   newest_vehicle_model_year = suppressWarnings(max(as.numeric(valid_model_year),
@@ -351,9 +342,7 @@ target_columns <- c(
   "number_injured", "multiple_people_injured", "maximum_injury_severity",
   "injured_pedestrian", "injured_cyclist",
   "serious_vulnerable_road_user_injury", "occupant_injury",
-  "passenger_injury", "rollover_crash", "vehicle_fire", "hit_and_run",
-  "multi_vehicle_crash", "commercial_vehicle_involved",
-  "hazardous_material_involved"
+  "passenger_injury", "multi_vehicle_crash"
 )
 
 setcolorder(crss_crash_targets, c(
@@ -401,17 +390,8 @@ exclusions <- rbindlist(list(
     excluded_variable_or_prefix = "crash_factor__non_occupant_struck_vehicle"
   ),
   data.table(
-    target = c("rollover_crash", "vehicle_fire", "hit_and_run",
-               "multi_vehicle_crash", "commercial_vehicle_involved",
-               "hazardous_material_involved"),
-    excluded_variable_or_prefix = c(
-      "rollover_crash", "vehicle_fire", "hit_and_run", "vehicle_count",
-      "vehicle_configuration__", "hazardous_material_involved"
-    )
-  ),
-  data.table(
-    target = "commercial_vehicle_involved",
-    excluded_variable_or_prefix = "vehicle_body_type__"
+    target = "multi_vehicle_crash",
+    excluded_variable_or_prefix = "vehicle_count"
   )
 ), use.names = TRUE)
 exclusions[, reason := fifelse(
@@ -432,10 +412,7 @@ schema[, source := fcase(
     "youngest_occupant_age", "oldest_occupant_age", "mean_occupant_age"
   ), "person.csv",
   variable %chin% injury_family, "person.csv/accident.csv",
-  variable %chin% c("rollover_crash", "vehicle_fire", "hit_and_run",
-                    "commercial_vehicle_involved",
-                    "hazardous_material_involved",
-                    "oldest_vehicle_model_year", "newest_vehicle_model_year",
+  variable %chin% c("oldest_vehicle_model_year", "newest_vehicle_model_year",
                     "mean_vehicle_model_year", "maximum_speed_limit",
                     "maximum_reported_travel_speed"), "vehicle.csv",
   startsWith(variable, "crash_factor__"), "crashrf.csv",

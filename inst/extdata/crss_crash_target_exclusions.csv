@@ -10,8 +10,6 @@ any_injury,occupant_injury,"Same outcome, direct component, or explicit descript
 any_injury,passenger_injury,"Same outcome, direct component, or explicit description would leak the target"
 any_injury,serious_or_fatal_injury,"Same outcome, direct component, or explicit description would leak the target"
 any_injury,serious_vulnerable_road_user_injury,"Same outcome, direct component, or explicit description would leak the target"
-commercial_vehicle_involved,vehicle_body_type__,"Same outcome, direct component, or explicit description would leak the target"
-commercial_vehicle_involved,vehicle_configuration__,"Same outcome, direct component, or explicit description would leak the target"
 fatal_crash,any_injury,"Same outcome, direct component, or explicit description would leak the target"
 fatal_crash,fatal_crash,Selected target cannot also be a predictor
 fatal_crash,injured_cyclist,"Same outcome, direct component, or explicit description would leak the target"
@@ -23,8 +21,6 @@ fatal_crash,occupant_injury,"Same outcome, direct component, or explicit descrip
 fatal_crash,passenger_injury,"Same outcome, direct component, or explicit description would leak the target"
 fatal_crash,serious_or_fatal_injury,"Same outcome, direct component, or explicit description would leak the target"
 fatal_crash,serious_vulnerable_road_user_injury,"Same outcome, direct component, or explicit description would leak the target"
-hazardous_material_involved,hazardous_material_involved,Selected target cannot also be a predictor
-hit_and_run,hit_and_run,Selected target cannot also be a predictor
 injured_cyclist,any_injury,"Same outcome, direct component, or explicit description would leak the target"
 injured_cyclist,crash_factor__non_occupant_struck_vehicle,"Same outcome, direct component, or explicit description would leak the target"
 injured_cyclist,fatal_crash,"Same outcome, direct component, or explicit description would leak the target"
@@ -107,7 +103,6 @@ passenger_injury,occupant_injury,"Same outcome, direct component, or explicit de
 passenger_injury,passenger_injury,Selected target cannot also be a predictor
 passenger_injury,serious_or_fatal_injury,"Same outcome, direct component, or explicit description would leak the target"
 passenger_injury,serious_vulnerable_road_user_injury,"Same outcome, direct component, or explicit description would leak the target"
-rollover_crash,rollover_crash,Selected target cannot also be a predictor
 serious_or_fatal_injury,any_injury,"Same outcome, direct component, or explicit description would leak the target"
 serious_or_fatal_injury,fatal_crash,"Same outcome, direct component, or explicit description would leak the target"
 serious_or_fatal_injury,injured_cyclist,"Same outcome, direct component, or explicit description would leak the target"
@@ -132,4 +127,3 @@ serious_vulnerable_road_user_injury,occupant_injury,"Same outcome, direct compon
 serious_vulnerable_road_user_injury,passenger_injury,"Same outcome, direct component, or explicit description would leak the target"
 serious_vulnerable_road_user_injury,serious_or_fatal_injury,"Same outcome, direct component, or explicit description would leak the target"
 serious_vulnerable_road_user_injury,serious_vulnerable_road_user_injury,Selected target cannot also be a predictor
-vehicle_fire,vehicle_fire,Selected target cannot also be a predictor

@@ -31,16 +31,12 @@ used only to construct crash-level injury targets.
 
 “Died Prior to Crash” is not counted as an injury caused by the crash.
 
-## Other potential targets
+## Other target
 
-- `rollover_crash`: at least one in-transport vehicle rolled over.
-- `vehicle_fire`: at least one in-transport vehicle had a fire or explosion.
-- `hit_and_run`: at least one in-transport vehicle was coded hit-and-run.
-- `multi_vehicle_crash`: at least two motor vehicles in transport were involved.
-- `commercial_vehicle_involved`: at least one vehicle has a truck, bus, or
-  other over-10,000-pound commercial configuration.
-- `hazardous_material_involved`: at least one vehicle carried hazardous
-  material as defined by CRSS.
+`multi_vehicle_crash`, indicating at least two motor vehicles in transport, is
+retained as an alternative target. Rollover, vehicle fire, hit-and-run,
+commercial-vehicle involvement, and hazardous-material involvement are not
+included as targets or predictor columns.
 
 Towing and maximum vehicle-damage targets are deliberately not included.
 

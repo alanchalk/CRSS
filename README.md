@@ -77,11 +77,12 @@ and 485 columns**. It includes 90,440 drivers and 30,035 passengers. The binary
 target has 87,065 no-apparent-injury records, 33,407 injured records, and three
 records with no crash-caused outcome because the person died before the crash.
 
-The crash-level build contains all **51,658 sampled crashes and 415 columns**,
+The crash-level build contains all **51,658 sampled crashes and 410 columns**,
 with alternative targets for injury, serious/fatal injury, pedestrian and cyclist injury,
-multiple injured people, rollover, fire, hit-and-run, commercial-vehicle
-involvement, and hazardous materials. Towing and maximum vehicle-damage targets
-are deliberately not included. Its design is documented in
+multiple injured people, passenger or occupant injury, and multi-vehicle
+crashes. Rollover, fire, hit-and-run, commercial-vehicle involvement, and
+hazardous materials are not included as either targets or predictors. Towing and
+maximum vehicle-damage targets are also deliberately not included. Its design is documented in
 [`data-raw/CRASH_CASE_STUDY_DESIGN.md`](data-raw/CRASH_CASE_STUDY_DESIGN.md).
 
 ## Source-file decisions
