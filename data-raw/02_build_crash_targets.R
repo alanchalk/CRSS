@@ -246,7 +246,12 @@ vehicle[, valid_speed_limit := fifelse(VSPD_LIM >= 0L & VSPD_LIM <= 85L,
                                        VSPD_LIM, NA_integer_)]
 vehicle[, valid_travel_speed := fifelse(TRAV_SP >= 0L & TRAV_SP <= 200L,
                                         TRAV_SP, NA_integer_)]
+vehicle[, commercial_configuration := !V_CONFIGNAME %chin% c(
+  "Not Applicable", "Unknown", "Qualifying Vehicle, Unknown Configuration"
+)]
 vehicle_summary <- vehicle[, .(
+  commercial_vehicle_involved = as.integer(any(commercial_configuration)),
+  hazardous_material_involved = as.integer(any(HAZ_INVNAME == "Yes")),
   oldest_vehicle_model_year = suppressWarnings(min(as.numeric(valid_model_year),
                                                     na.rm = TRUE)),
   newest_vehicle_model_year = suppressWarnings(max(as.numeric(valid_model_year),
@@ -412,7 +417,9 @@ schema[, source := fcase(
     "youngest_occupant_age", "oldest_occupant_age", "mean_occupant_age"
   ), "person.csv",
   variable %chin% injury_family, "person.csv/accident.csv",
-  variable %chin% c("oldest_vehicle_model_year", "newest_vehicle_model_year",
+  variable %chin% c("commercial_vehicle_involved",
+                    "hazardous_material_involved",
+                    "oldest_vehicle_model_year", "newest_vehicle_model_year",
                     "mean_vehicle_model_year", "maximum_speed_limit",
                     "maximum_reported_travel_speed"), "vehicle.csv",
   startsWith(variable, "crash_factor__"), "crashrf.csv",

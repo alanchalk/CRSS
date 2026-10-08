@@ -23,9 +23,9 @@ Each row represents one sampled police-reported crash.
 \details{
 The table contains alternative injury, vulnerable-road-user, and
 multi-vehicle targets. It also contains crash context and aggregated vehicle
-and driver information. Rollover, fire, hit-and-run, commercial-vehicle,
-hazardous-material, towing, and maximum vehicle-damage fields are deliberately
-omitted as targets and predictor columns.
+and driver information. Commercial-vehicle and hazardous-material status are
+retained as pre-crash predictors, not targets. Rollover, fire, hit-and-run,
+towing, and maximum vehicle-damage fields are deliberately omitted.
 
 Because several alternative outcomes coexist in this table, predictor
 eligibility depends on the selected target. Target-specific exclusions are

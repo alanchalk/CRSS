@@ -36,7 +36,8 @@ used only to construct crash-level injury targets.
 `multi_vehicle_crash`, indicating at least two motor vehicles in transport, is
 retained as an alternative target. Rollover, vehicle fire, hit-and-run,
 commercial-vehicle involvement, and hazardous-material involvement are not
-included as targets or predictor columns.
+targets. Commercial-vehicle and hazardous-material status are retained as
+pre-crash predictors; rollover, fire, and hit-and-run are omitted entirely.
 
 Towing and maximum vehicle-damage targets are deliberately not included.
 

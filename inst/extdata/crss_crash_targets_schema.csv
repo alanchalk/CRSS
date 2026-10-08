@@ -49,6 +49,8 @@ unrestrained_occupant_count,person.csv,candidate_predictor
 any_unrestrained_occupant,person.csv,candidate_predictor
 any_front_seat_passenger,person.csv,candidate_predictor
 any_rear_seat_occupant,person.csv,candidate_predictor
+commercial_vehicle_involved,vehicle.csv,candidate_predictor
+hazardous_material_involved,vehicle.csv,candidate_predictor
 oldest_vehicle_model_year,vehicle.csv,candidate_predictor
 newest_vehicle_model_year,vehicle.csv,candidate_predictor
 mean_vehicle_model_year,vehicle.csv,candidate_predictor

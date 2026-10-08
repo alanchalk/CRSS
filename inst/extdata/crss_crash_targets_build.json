@@ -1,8 +1,8 @@
 {
   "source_year": 2024,
-  "built_at_utc": "2026-10-08 08:56:44 UTC",
+  "built_at_utc": "2026-10-08 08:58:04 UTC",
   "rows": 51658,
-  "columns": 410,
+  "columns": 412,
   "duplicate_crash_keys": 0,
   "targets": ["any_injury", "serious_or_fatal_injury", "fatal_crash", "number_injured", "multiple_people_injured", "maximum_injury_severity", "injured_pedestrian", "injured_cyclist", "serious_vulnerable_road_user_injury", "occupant_injury", "passenger_injury", "multi_vehicle_crash"],
   "target_counts": {
