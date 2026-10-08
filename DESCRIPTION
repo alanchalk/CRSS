@@ -1,0 +1,18 @@
+Package: crssoccupant
+Title: CRSS 2024 Motor Vehicle Occupant Injury Data
+Version: 0.0.0.9000
+Authors@R: person("CAS", "Research", role = c("aut", "cre"),
+    email = "research@example.com")
+Description: Reproducible preparation of a person-level motor vehicle occupant
+    injury dataset from the United States Crash Report Sampling System for
+    decision-tree and related case studies.
+License: CC0
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    data.table
+LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

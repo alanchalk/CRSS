@@ -1,0 +1,27 @@
+.Rproj.user
+.Rhistory
+.RData
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
+
+# Original NHTSA downloads are reproducible and too large for Git.
+/data-raw/*
+!/data-raw/*.R
+!/data-raw/*.py
+!/data-raw/*.md
+
+# Generated package data and metadata are intentionally versioned.
+
+inst/doc
+/doc/
+/Meta/
+*.Rproj
+
+# Model-training logs.
+catboost_info/
+
+# Local package build/check products.
+/*.tar.gz
+/*.Rcheck/

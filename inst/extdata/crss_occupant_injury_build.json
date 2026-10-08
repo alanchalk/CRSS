@@ -1,0 +1,17 @@
+{
+  "source_year": 2024,
+  "built_at_utc": "2026-10-07 22:46:41 UTC",
+  "source_files": 28,
+  "rows": 120475,
+  "columns": 485,
+  "crashes": 51627,
+  "vehicles": 90456,
+  "drivers": 90440,
+  "passengers": 30035,
+  "injured_nonmissing": 120472,
+  "injured_count": 33407,
+  "duplicate_person_keys": 0,
+  "fold_is_crash_grouped": true,
+  "source_column_counts_validated": true,
+  "excluded_outcome_leakage_fields": ["MAX_SEV", "MAX_SEVNAME", "MAXSEV_IM", "MAXSEV_IMNAME", "NUM_INJ", "NUM_INJNAME", "NO_INJ_IM", "NO_INJ_IMNAME", "MAX_VSEV", "MAX_VSEVNAME", "MXVSEV_IM", "MXVSEV_IMNAME", "NUM_INJV", "NUM_INJVNAME", "NUMINJ_IM", "NUMINJ_IMNAME", "HOSPITAL", "HOSPITALNAME"]
+}
