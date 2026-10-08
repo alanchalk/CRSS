@@ -53,25 +53,26 @@ The original English injury-severity categories remain in
 
 ```bash
 Rscript data-raw/00_download_crss_2024.R
-Rscript data-raw/01_build_occupant_injury.R
-Rscript data-raw/02_build_journey_start_severity.R
+Rscript data-raw/01_build_inj_occupant.R
+Rscript data-raw/02_build_sev_crash.R
 ```
 
 The build uses `data.table`, validates source schemas and keys, aggregates
 multi-response files before joining, and refuses to save a result with duplicate
 person keys. It creates:
 
-Exported analytical tables follow the repository convention `dt_<source>_<purpose>`.
+Exported analytical tables follow the target-before-grain convention documented
+in [`NAMING.md`](NAMING.md).
 
-- `data/dt_crss_occupant_injury.rda`: the package dataset;
-- `inst/extdata/dt_crss_occupant_injury_schema.csv`: variable source, timing, and
+- `data/dt_crss_inj_occupant.rda`: the package dataset;
+- `inst/extdata/dt_crss_inj_occupant_schema.csv`: variable source, timing, and
   modelling role;
-- `inst/extdata/dt_crss_occupant_injury_build.json`: row/column counts and build
+- `inst/extdata/dt_crss_inj_occupant_build.json`: row/column counts and build
   checks;
-- `data/dt_crss_journey_start_severity.rda`: the physically restricted Option 3
+- `data/dt_crss_sev_crash.rda`: the physically restricted Option 3
   dataset, excluding collision consequences while retaining clearly labelled
   retrospective descriptions of pre-impact conditions and conduct;
-- `inst/extdata/dt_crss_journey_start_severity_schema.csv`: provenance, modelling
+- `inst/extdata/dt_crss_sev_crash_schema.csv`: provenance, modelling
   role, and information timing for every Option 3 column.
 
 The 2024 build contains **120,475 occupants, 90,456 vehicles, 51,627 crashes,

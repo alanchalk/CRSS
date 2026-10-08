@@ -15,7 +15,7 @@
 #'
 #' Multi-response CRSS files are represented as Boolean indicator columns.
 #' Column provenance, timing, and modelling roles are recorded in
-#' `inst/extdata/dt_crss_occupant_injury_schema.csv`. In particular, columns
+#' `inst/extdata/dt_crss_inj_occupant_schema.csv`. In particular, columns
 #' labelled `post_crash` should not be used in a model presented as pre-impact
 #' injury risk.
 #'
@@ -27,6 +27,6 @@
 #' @import data.table
 #' @format A `data.table` with one row per in-scope occupant. Build-time row and
 #'   column counts are stored in
-#'   `inst/extdata/dt_crss_occupant_injury_build.json`.
+#'   `inst/extdata/dt_crss_inj_occupant_build.json`.
 #' @source \url{https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/CRSS/2024/}
-"dt_crss_occupant_injury"
+"dt_crss_inj_occupant"

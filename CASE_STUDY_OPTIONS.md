@@ -14,7 +14,7 @@ the probability that a journey results in a crash.
 
 ### Dataset and observation
 
-This option uses `dt_crss_occupant_injury`, with one row per driver or passenger.
+This option uses `dt_crss_inj_occupant`, with one row per driver or passenger.
 People are nested within vehicles, and vehicles are nested within crashes. The
 unique key is `case_number + vehicle_number + person_number`.
 
@@ -114,7 +114,7 @@ than distinguishing injury from non-injury among pedestrians.
 
 ### Dataset and observation
 
-This option uses the dedicated `dt_crss_journey_start_severity` table, with one
+This option uses the dedicated `dt_crss_sev_crash` table, with one
 row per crash and `serious_or_fatal_injury` as the binary target. The table is
 physically restricted to eligible fields rather than requiring readers to
 remove post-crash columns during modelling.
@@ -161,7 +161,7 @@ pre-impact conduct:
 - speeding;
 - avoidance behaviour.
 
-These fields are present in `dt_crss_journey_start_severity` and explicitly marked
+These fields are present in `dt_crss_sev_crash` and explicitly marked
 as retrospective. A principal model can omit them using the schema, while an
 expanded model can include them to show the value gained from information that
 was unavailable at journey start.

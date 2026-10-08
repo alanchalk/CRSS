@@ -325,13 +325,13 @@ vehicle <- rename_columns(vehicle, c(
   ACC_TYPENAME = "crash_type"
 ))
 
-dt_crss_occupant_injury <- left_join_checked(
+dt_crss_inj_occupant <- left_join_checked(
   person, vehicle,
   by = c("case_number", "vehicle_number"),
   label = "vehicle join"
 )
-dt_crss_occupant_injury <- left_join_checked(
-  dt_crss_occupant_injury, accident,
+dt_crss_inj_occupant <- left_join_checked(
+  dt_crss_inj_occupant, accident,
   by = "case_number",
   label = "accident join"
 )
@@ -366,8 +366,8 @@ for (spec in flag_specs) {
     vehicle = c("case_number", "vehicle_number"),
     person = c("case_number", "vehicle_number", "person_number")
   )
-  dt_crss_occupant_injury <- left_join_checked(
-    dt_crss_occupant_injury, flags, join_key,
+  dt_crss_inj_occupant <- left_join_checked(
+    dt_crss_inj_occupant, flags, join_key,
     paste0(spec[[1L]], " join")
   )
 }
@@ -400,8 +400,8 @@ vevent_summary <- merge(
   by = c("CASENUM", "VEH_NO"), all.x = TRUE, sort = FALSE
 )
 setnames(vevent_summary, c("CASENUM", "VEH_NO"), c("case_number", "vehicle_number"))
-dt_crss_occupant_injury <- left_join_checked(
-  dt_crss_occupant_injury, vevent_summary,
+dt_crss_inj_occupant <- left_join_checked(
+  dt_crss_inj_occupant, vevent_summary,
   c("case_number", "vehicle_number"), "vevent join"
 )
 
@@ -433,8 +433,8 @@ setnames(
   old = setdiff(names(vpic), c("case_number", "vehicle_number")),
   new = paste0("vpic_", snake_name(setdiff(names(vpic), c("case_number", "vehicle_number"))))
 )
-dt_crss_occupant_injury <- left_join_checked(
-  dt_crss_occupant_injury, vpic,
+dt_crss_inj_occupant <- left_join_checked(
+  dt_crss_inj_occupant, vpic,
   c("case_number", "vehicle_number"), "vpic join"
 )
 
@@ -442,32 +442,32 @@ dt_crss_occupant_injury <- left_join_checked(
 # selected response. Preserve missingness for vPIC and scalar fields.
 indicator_columns <- grep(
   "^(crash_factor|weather|vehicle_special_factor|driver_factor|driver_distraction|driver_impairment|vehicle_contributing_factor|avoidance_manoeuvre|driver_violation|vision_obstruction|person_factor|postcrash_damaged_area|vehicle_event)__",
-  names(dt_crss_occupant_injury), value = TRUE
+  names(dt_crss_inj_occupant), value = TRUE
 )
 for (j in indicator_columns) {
-  set(dt_crss_occupant_injury, which(is.na(dt_crss_occupant_injury[[j]])), j, FALSE)
+  set(dt_crss_inj_occupant, which(is.na(dt_crss_inj_occupant[[j]])), j, FALSE)
 }
 
 # Ten reproducible folds assigned at crash level, never at person level.
 set.seed(2024)
-crashes <- sort(unique(dt_crss_occupant_injury$case_number))
+crashes <- sort(unique(dt_crss_inj_occupant$case_number))
 fold_map <- data.table(
   case_number = crashes,
   fold = sample(rep(1:10, length.out = length(crashes)))
 )
-dt_crss_occupant_injury <- left_join_checked(
-  dt_crss_occupant_injury, fold_map, "case_number", "fold join"
+dt_crss_inj_occupant <- left_join_checked(
+  dt_crss_inj_occupant, fold_map, "case_number", "fold join"
 )
 
 setcolorder(
-  dt_crss_occupant_injury,
+  dt_crss_inj_occupant,
   c(
     "case_number", "vehicle_number", "person_number", "fold",
     "injured", "serious_or_fatal_injury",
     "injury_severity_observed", "injury_severity_imputed",
     "weight", "psu", "psu_var", "psu_stratum",
     setdiff(
-      names(dt_crss_occupant_injury),
+      names(dt_crss_inj_occupant),
       c(
         "case_number", "vehicle_number", "person_number", "fold",
         "injured", "serious_or_fatal_injury",
@@ -477,22 +477,22 @@ setcolorder(
     )
   )
 )
-setkey(dt_crss_occupant_injury, case_number, vehicle_number, person_number)
+setkey(dt_crss_inj_occupant, case_number, vehicle_number, person_number)
 
 assert_unique_key(
-  dt_crss_occupant_injury,
+  dt_crss_inj_occupant,
   c("case_number", "vehicle_number", "person_number"),
   "final dataset"
 )
-if (any(outcome_leakage_source_fields %chin% names(dt_crss_occupant_injury))) {
+if (any(outcome_leakage_source_fields %chin% names(dt_crss_inj_occupant))) {
   stop("A source outcome-leakage field survived under its original name")
 }
-if (dt_crss_occupant_injury[, uniqueN(fold), by = case_number][, max(V1)] != 1L) {
+if (dt_crss_inj_occupant[, uniqueN(fold), by = case_number][, max(V1)] != 1L) {
   stop("A crash was assigned to more than one fold")
 }
 
 # Machine-readable provenance and modelling roles.
-schema <- data.table(variable = names(dt_crss_occupant_injury))
+schema <- data.table(variable = names(dt_crss_inj_occupant))
 schema[, source := fcase(
   variable %chin% c("case_number", "fold"), "derived",
   variable %chin% c("vehicle_number", "person_number", "age_years", "sex",
@@ -549,21 +549,21 @@ schema[, model_role := fcase(
   default = "primary_predictor"
 )]
 
-fwrite(schema, file.path(metadata_dir, "dt_crss_occupant_injury_schema.csv"))
+fwrite(schema, file.path(metadata_dir, "dt_crss_inj_occupant_schema.csv"))
 
 build_report <- list(
   source_year = 2024L,
   built_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
   source_files = length(source_files),
-  rows = nrow(dt_crss_occupant_injury),
-  columns = ncol(dt_crss_occupant_injury),
-  crashes = uniqueN(dt_crss_occupant_injury$case_number),
-  vehicles = uniqueN(dt_crss_occupant_injury[, .(case_number, vehicle_number)]),
-  drivers = dt_crss_occupant_injury[person_type == person_types_in_scope[1L], .N],
-  passengers = dt_crss_occupant_injury[person_type == person_types_in_scope[2L], .N],
-  injured_nonmissing = dt_crss_occupant_injury[!is.na(injured), .N],
-  injured_count = dt_crss_occupant_injury[injured == 1L, .N],
-  duplicate_person_keys = dt_crss_occupant_injury[
+  rows = nrow(dt_crss_inj_occupant),
+  columns = ncol(dt_crss_inj_occupant),
+  crashes = uniqueN(dt_crss_inj_occupant$case_number),
+  vehicles = uniqueN(dt_crss_inj_occupant[, .(case_number, vehicle_number)]),
+  drivers = dt_crss_inj_occupant[person_type == person_types_in_scope[1L], .N],
+  passengers = dt_crss_inj_occupant[person_type == person_types_in_scope[2L], .N],
+  injured_nonmissing = dt_crss_inj_occupant[!is.na(injured), .N],
+  injured_count = dt_crss_inj_occupant[injured == 1L, .N],
+  duplicate_person_keys = dt_crss_inj_occupant[
     , sum(duplicated(.SD)),
     .SDcols = c("case_number", "vehicle_number", "person_number")
   ],
@@ -577,19 +577,19 @@ if (!requireNamespace("jsonlite", quietly = TRUE)) {
 }
 jsonlite::write_json(
   build_report,
-  file.path(metadata_dir, "dt_crss_occupant_injury_build.json"),
+  file.path(metadata_dir, "dt_crss_inj_occupant_build.json"),
   pretty = TRUE,
   auto_unbox = TRUE
 )
 
 save(
-  dt_crss_occupant_injury,
-  file = file.path(data_dir, "dt_crss_occupant_injury.rda"),
+  dt_crss_inj_occupant,
+  file = file.path(data_dir, "dt_crss_inj_occupant.rda"),
   compress = "xz"
 )
 
 message(
-  "Built dt_crss_occupant_injury: ",
-  format(nrow(dt_crss_occupant_injury), big.mark = ","), " rows x ",
-  format(ncol(dt_crss_occupant_injury), big.mark = ","), " columns"
+  "Built dt_crss_inj_occupant: ",
+  format(nrow(dt_crss_inj_occupant), big.mark = ","), " rows x ",
+  format(ncol(dt_crss_inj_occupant), big.mark = ","), " columns"
 )
